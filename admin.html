@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard – PayPal</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ── PayPal admin theme overrides ── */
+    :root {
+      --primary: #003087;
+      --primary-hover: #002168;
+      --primary-light: #e8f0fb;
+    }
+
+    header.site-header {
+      border-bottom: 1px solid #d9dde3;
+      background: #fff;
+    }
+
+    .pp-admin-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .pp-admin-logo svg { display: block; flex-shrink: 0; }
+
+    .pp-admin-badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      background: #fff0f0;
+      color: #991b1b;
+      border: 1px solid #fca5a5;
+      padding: 2px 8px;
+      border-radius: 3px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .tab-btn {
+      font-size: 0.875rem;
+      letter-spacing: 0.01em;
+      font-weight: 500;
+    }
+
+    .tab-btn.active {
+      color: #003087;
+      background-color: #e8f0fb;
+    }
+
+    .btn-primary {
+      background-color: #003087;
+    }
+
+    .btn-primary:hover { background-color: #002168; }
+
+    .nav-link.active {
+      color: #003087;
+      background-color: #e8f0fb;
+    }
+
+    /* Tax deposit field highlight */
+    .tax-deposit-field {
+      grid-column: 1 / -1;
+      border: 1px solid #fca5a5;
+      border-radius: 6px;
+      padding: 1rem 1.1rem;
+      background: #fff8f8;
+    }
+
+    .tax-deposit-field label { color: #991b1b !important; }
+    .tax-deposit-field small { color: #991b1b; font-size: 0.75rem; margin-top: 0.3rem; display: block; }
+
+    .form-section-title { font-size: 0.95rem; letter-spacing: 0.01em; }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <header class="site-header">
+    <div class="header-container">
+      <a href="admin.html" class="pp-admin-logo">
+        <!-- PayPal wordmark SVG -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="21" viewBox="0 0 124 33" fill="none" aria-label="PayPal">
+          <path d="M18.571 6.113c-.428-2.783-2.924-4.6-6.49-4.6H4.826C4.3 1.513 3.86 1.9 3.78 2.42L1.013 19.973c-.06.386.24.734.63.734h4.593l1.154-7.325-.036.228c.08-.52.515-.907 1.04-.907h2.168c4.254 0 7.587-1.729 8.562-6.728.029-.147.054-.291.075-.432c.117-.748.117-1.254-.047-1.84" fill="#009cde"/>
+          <path d="M18.571 6.113c-.16.98-.472 1.886-.932 2.698-1.138 1.954-3.207 2.966-5.985 2.966H9.496c-.525 0-.96.387-1.04.907l-1.218 7.733-.345 2.189c-.052.33.203.628.537.628h3.775c.46 0 .847-.334.919-.789l.038-.196.729-4.624.047-.254c.072-.455.46-.789.92-.789h.579c3.753 0 6.69-1.525 7.549-5.936.358-1.84.173-3.375-.773-4.455-.287-.326-.628-.598-1.042-.826" fill="#003087"/>
+          <path d="M17.496 5.682a7.63 7.63 0 0 0-.938-.208 11.9 11.9 0 0 0-1.885-.137h-5.71c-.46 0-.847.334-.92.789l-1.215 7.703-.035.228c.08-.52.515-.907 1.04-.907h2.168c4.254 0 7.587-1.729 8.562-6.728.029-.147.054-.291.075-.432a6.34 6.34 0 0 0-.972-.277" fill="#012169"/>
+          <path d="M37.37 8.4h-4.03c-.277 0-.513.198-.558.471l-1.63 10.33c-.033.21.13.4.343.4h1.925c.277 0 .513-.198.558-.471l.44-2.785c.044-.273.28-.471.558-.471h1.276c2.656 0 4.185-1.285 4.584-3.831.18-1.113.007-1.988-.516-2.6-.575-.672-1.593-1.043-2.95-1.043zm.465 3.773c-.22 1.44-1.323 1.44-2.39 1.44h-.607l.426-2.698c.025-.16.166-.278.33-.278h.278c.727 0 1.413 0 1.767.414.212.247.277.614.196 1.122zM49.17 12.14h-1.934c-.163 0-.305.117-.33.278l-.085.537-.134-.195c-.417-.605-1.346-.807-2.274-.807-2.128 0-3.946 1.611-4.3 3.872-.184 1.128.078 2.206.717 2.958.588.69 1.428 1.034 2.428 1.034 1.715 0 2.666-1.102 2.666-1.102l-.086.534c-.033.21.13.4.343.4h1.74c.277 0 .512-.198.557-.471l1.044-6.616c.034-.21-.13-.4-.342-.4zm-2.69 3.747c-.186 1.1-1.056 1.839-2.17 1.839-.558 0-1.005-.18-1.291-.52-.284-.337-.39-.817-.3-1.351.173-1.09 1.057-1.853 2.154-1.853.546 0 .99.181 1.282.525.294.347.408.831.325 1.36zM58.72 12.14h-1.942a.56.56 0 0 0-.462.245l-2.667 3.927-1.13-3.774a.558.558 0 0 0-.535-.398h-1.908c-.235 0-.4.231-.326.452l2.13 6.251-2.005 2.826c-.16.226.002.536.278.536h1.94c.181 0 .35-.088.454-.237l6.447-9.306c.157-.225-.004-.522-.274-.522z" fill="#003087"/>
+          <path d="M66.85 8.4h-4.03c-.277 0-.513.198-.558.471l-1.63 10.33c-.033.21.13.4.343.4h2.07c.194 0 .36-.14.39-.333l.463-2.923c.044-.273.28-.471.558-.471h1.276c2.656 0 4.185-1.285 4.584-3.831.18-1.113.007-1.988-.516-2.6-.575-.672-1.593-1.043-2.95-1.043zm.465 3.773c-.22 1.44-1.323 1.44-2.39 1.44h-.607l.426-2.698c.025-.16.166-.278.33-.278h.278c.727 0 1.413 0 1.767.414.212.247.277.614.196 1.122zM78.65 12.14h-1.934c-.163 0-.305.117-.33.278l-.085.537-.134-.195c-.417-.605-1.346-.807-2.274-.807-2.128 0-3.946 1.611-4.3 3.872-.184 1.128.078 2.206.717 2.958.588.69 1.428 1.034 2.428 1.034 1.715 0 2.666-1.102 2.666-1.102l-.086.534c-.033.21.13.4.343.4h1.74c.277 0 .512-.198.557-.471l1.044-6.616c.034-.21-.13-.4-.342-.4zm-2.69 3.747c-.186 1.1-1.056 1.839-2.17 1.839-.558 0-1.005-.18-1.291-.52-.284-.337-.39-.817-.3-1.351.173-1.09 1.057-1.853 2.154-1.853.546 0 .99.181 1.282.525.294.347.408.831.325 1.36zM81.49 8.65l-1.654 10.52c-.033.21.13.4.343.4h1.665c.277 0 .513-.198.558-.471l1.633-10.33c.033-.21-.13-.4-.343-.4h-1.86a.338.338 0 0 0-.342.281z" fill="#009cde"/>
+        </svg>
+        <span class="pp-admin-badge">Admin</span>
+      </a>
+      <nav class="main-nav">
+        <a href="index.html" class="nav-link" target="_blank">View Receipt</a>
+        <a href="support.html" class="nav-link" target="_blank">View Support</a>
+        <a href="admin.html" class="nav-link active">Admin Panel</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content admin-layout">
+    <div class="admin-tabs">
+      <button class="tab-btn active" id="tabBtnReceipt" onclick="switchTab('receipt')">
+        Receipt Editor
+      </button>
+      <button class="tab-btn" id="tabBtnSupport" onclick="switchTab('support')">
+        Support Inbox
+      </button>
+    </div>
+
+    <!-- TAB 1: Receipt Editor -->
+    <div class="card" id="tabReceiptContent">
+      <form id="receiptEditForm">
+
+        <!-- Section 1: Transaction Info -->
+        <div class="form-section">
+          <h2 class="form-section-title">1. Transaction &amp; Order Details</h2>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="adminOrderId">Order / Transaction ID</label>
+              <input type="text" class="form-control" id="adminOrderId" required>
+            </div>
+            <div class="form-group">
+              <label for="adminDate">Transaction Date &amp; Time</label>
+              <input type="text" class="form-control" id="adminDate" required>
+            </div>
+            <div class="form-group">
+              <label for="adminStatus">Payment Status</label>
+              <select class="form-control" id="adminStatus">
+                <option value="Paid">Paid</option>
+                <option value="Pending">Pending</option>
+                <option value="Refunded">Refunded</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="adminPaymentMethod">Payment Method</label>
+              <input type="text" class="form-control" id="adminPaymentMethod" placeholder="e.g. Visa ending in 4242">
+            </div>
+            <div class="form-group">
+              <label for="adminCurrency">Currency Symbol</label>
+              <input type="text" class="form-control" id="adminCurrency" placeholder="$" maxlength="3">
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Recipient -->
+        <div class="form-section">
+          <h2 class="form-section-title">2. Recipient / Customer Details</h2>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="adminRecipientName">Recipient Name</label>
+              <input type="text" class="form-control" id="adminRecipientName" required>
+            </div>
+            <div class="form-group">
+              <label for="adminRecipientEmail">Recipient Email</label>
+              <input type="email" class="form-control" id="adminRecipientEmail" required>
+            </div>
+            <div class="form-group" style="grid-column: 1 / -1;">
+              <label for="adminRecipientAddress">Recipient Billing Address</label>
+              <input type="text" class="form-control" id="adminRecipientAddress">
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: Payer / Merchant -->
+        <div class="form-section">
+          <h2 class="form-section-title">3. Payer / Merchant Details</h2>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="adminMerchantName">Payer Name</label>
+              <input type="text" class="form-control" id="adminMerchantName" required>
+            </div>
+            <div class="form-group">
+              <label for="adminMerchantEmail">Payer Email</label>
+              <input type="email" class="form-control" id="adminMerchantEmail" required>
+            </div>
+            <div class="form-group" style="grid-column: 1 / -1;">
+              <label for="adminMerchantAddress">Payer Address</label>
+              <input type="text" class="form-control" id="adminMerchantAddress">
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 4: Items + Fees -->
+        <div class="form-section">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem;">
+            <h2 class="form-section-title" style="margin-bottom:0;">4. Purchased Items</h2>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="addItemRow()">+ Add Item</button>
+          </div>
+          <table class="editable-items-table">
+            <thead>
+              <tr>
+                <th style="width: 50%;">Item Description</th>
+                <th style="width: 15%;">Qty</th>
+                <th style="width: 25%;">Unit Price</th>
+                <th style="width: 10%;"></th>
+              </tr>
+            </thead>
+            <tbody id="adminItemsBody">
+              <!-- Populated dynamically -->
+            </tbody>
+          </table>
+
+          <div class="form-grid" style="margin-top: 1rem;">
+            <div class="form-group">
+              <label for="adminTaxRate">Tax Rate (e.g. 0.08 for 8%)</label>
+              <input type="number" step="0.01" class="form-control" id="adminTaxRate">
+            </div>
+            <div class="form-group">
+              <label for="adminShipping">Shipping Fee</label>
+              <input type="number" step="0.01" class="form-control" id="adminShipping">
+            </div>
+            <div class="form-group tax-deposit-field">
+              <label for="adminTaxDeposit">Tax Deposit Amount (USD) — shown to user on Tax Deposit page</label>
+              <input type="number" step="0.01" min="0" class="form-control" id="adminTaxDeposit" placeholder="e.g. 250">
+              <small>This is the dollar amount the user sees when they click "Proceed" on the receipt page. Change this to control what amount is displayed.</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 5: Notes -->
+        <div class="form-section">
+          <h2 class="form-section-title">5. Notes &amp; Footer Message</h2>
+          <div class="form-group">
+            <textarea class="form-control" id="adminNotes" rows="2"></textarea>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="modal-footer" style="padding: 1.25rem 2rem; justify-content: space-between;">
+          <button type="button" class="btn btn-secondary" onclick="handleResetDefaults()">
+            Reset to Default
+          </button>
+          <div style="display: flex; gap: 0.75rem;">
+            <a href="index.html" target="_blank" class="btn btn-secondary">
+              Open Receipt
+            </a>
+            <button type="submit" class="btn btn-primary">
+              Save Changes
+            </button>
+          </div>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- TAB 2: Support Inbox -->
+    <div class="card" id="tabSupportContent" style="display: none;">
+      <div class="support-wrapper">
+        <!-- Ticket Sidebar -->
+        <aside class="ticket-sidebar">
+          <div class="ticket-sidebar-header">
+            <h2>Inbox</h2>
+            <span class="status-badge status-paid" id="adminOpenTicketsCount">0</span>
+          </div>
+          <ul class="ticket-list" id="adminTicketsList">
+            <!-- Rendered dynamically -->
+          </ul>
+        </aside>
+
+        <!-- Admin Conversation -->
+        <section class="chat-pane" id="adminChatPane">
+          <div class="chat-header">
+            <div>
+              <h2 id="adminChatSubject">Ticket Conversation</h2>
+              <div class="chat-meta" id="adminChatMeta">Select a ticket to respond to customer inquiries.</div>
+            </div>
+            <div style="display:flex; align-items:center; gap: 0.5rem;">
+              <select class="form-control" id="ticketStatusSelect" onchange="updateTicketStatus(this.value)">
+                <option value="Open">Open</option>
+                <option value="Answered">Answered</option>
+                <option value="Closed">Closed</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="chat-messages" id="adminChatMessages">
+            <!-- Rendered dynamically -->
+          </div>
+
+          <div class="chat-input-area" id="adminChatInputArea">
+            <textarea id="adminReplyInput" rows="3" placeholder="Compose your response... (Ctrl+Enter to send)"></textarea>
+            <button class="btn btn-primary" id="btnAdminSendReply" onclick="sendAdminReply()">
+              Send Reply
+            </button>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <script src="app.js"></script>
+  <script>
+    let activeAdminTicketId = null;
+
+    function switchTab(tab) {
+      const receiptBtn = document.getElementById("tabBtnReceipt");
+      const supportBtn = document.getElementById("tabBtnSupport");
+      const receiptContent = document.getElementById("tabReceiptContent");
+      const supportContent = document.getElementById("tabSupportContent");
+
+      if (tab === "receipt") {
+        receiptBtn.classList.add("active");
+        supportBtn.classList.remove("active");
+        receiptContent.style.display = "block";
+        supportContent.style.display = "none";
+      } else {
+        receiptBtn.classList.remove("active");
+        supportBtn.classList.add("active");
+        receiptContent.style.display = "none";
+        supportContent.style.display = "block";
+        loadAdminTickets();
+      }
+    }
+
+    function populateReceiptForm() {
+      const data = getReceiptData();
+
+      document.getElementById("adminOrderId").value = data.orderId || "";
+      document.getElementById("adminDate").value = data.date || "";
+      document.getElementById("adminStatus").value = data.status || "Paid";
+      document.getElementById("adminPaymentMethod").value = data.paymentMethod || "";
+      document.getElementById("adminCurrency").value = data.currency || "$";
+
+      document.getElementById("adminRecipientName").value = data.recipient.name || "";
+      document.getElementById("adminRecipientEmail").value = data.recipient.email || "";
+      document.getElementById("adminRecipientAddress").value = data.recipient.address || "";
+
+      document.getElementById("adminMerchantName").value = data.merchant.name || "";
+      document.getElementById("adminMerchantEmail").value = data.merchant.email || "";
+      document.getElementById("adminMerchantAddress").value = data.merchant.address || "";
+
+      document.getElementById("adminTaxRate").value = data.taxRate !== undefined ? data.taxRate : 0.08;
+      document.getElementById("adminShipping").value = data.shipping !== undefined ? data.shipping : 0.00;
+      document.getElementById("adminTaxDeposit").value = data.taxDepositAmount !== undefined ? data.taxDepositAmount : 250;
+      document.getElementById("adminNotes").value = data.notes || "";
+
+      renderAdminItems(data.items || []);
+    }
+
+    function renderAdminItems(items) {
+      const tbody = document.getElementById("adminItemsBody");
+      tbody.innerHTML = "";
+      items.forEach((item) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><input type="text" class="form-control item-desc" value="${escapeHtml(item.description)}" required></td>
+          <td><input type="number" min="1" class="form-control item-qty" value="${item.qty}" required></td>
+          <td><input type="number" step="0.01" min="0" class="form-control item-price" value="${item.price}" required></td>
+          <td><button type="button" class="btn btn-secondary btn-sm" onclick="removeItemRow(this)">Remove</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function addItemRow() {
+      const tbody = document.getElementById("adminItemsBody");
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td><input type="text" class="form-control item-desc" placeholder="Item description" required></td>
+        <td><input type="number" min="1" class="form-control item-qty" value="1" required></td>
+        <td><input type="number" step="0.01" min="0" class="form-control item-price" value="0.00" required></td>
+        <td><button type="button" class="btn btn-secondary btn-sm" onclick="removeItemRow(this)">Remove</button></td>
+      `;
+      tbody.appendChild(tr);
+    }
+
+    function removeItemRow(btn) {
+      const tr = btn.closest("tr");
+      const tbody = document.getElementById("adminItemsBody");
+      if (tbody.children.length > 1) {
+        tr.remove();
+      } else {
+        alert("Receipt must have at least one line item.");
+      }
+    }
+
+    document.getElementById("receiptEditForm").onsubmit = (e) => {
+      e.preventDefault();
+
+      const itemRows = document.querySelectorAll("#adminItemsBody tr");
+      const items = [];
+      itemRows.forEach(row => {
+        const desc = row.querySelector(".item-desc").value.trim();
+        const qty = Number(row.querySelector(".item-qty").value) || 1;
+        const price = Number(row.querySelector(".item-price").value) || 0;
+        items.push({ description: desc, qty: qty, price: price });
+      });
+
+      const updatedData = {
+        orderId: document.getElementById("adminOrderId").value.trim(),
+        date: document.getElementById("adminDate").value.trim(),
+        status: document.getElementById("adminStatus").value,
+        paymentMethod: document.getElementById("adminPaymentMethod").value.trim(),
+        currency: document.getElementById("adminCurrency").value.trim() || "$",
+        recipient: {
+          name: document.getElementById("adminRecipientName").value.trim(),
+          email: document.getElementById("adminRecipientEmail").value.trim(),
+          address: document.getElementById("adminRecipientAddress").value.trim()
+        },
+        merchant: {
+          name: document.getElementById("adminMerchantName").value.trim(),
+          email: document.getElementById("adminMerchantEmail").value.trim(),
+          address: document.getElementById("adminMerchantAddress").value.trim()
+        },
+        items: items,
+        taxRate: Number(document.getElementById("adminTaxRate").value) || 0,
+        shipping: Number(document.getElementById("adminShipping").value) || 0,
+        taxDepositAmount: Number(document.getElementById("adminTaxDeposit").value) || 250,
+        notes: document.getElementById("adminNotes").value.trim()
+      };
+
+      saveReceiptData(updatedData);
+      showToast("Changes saved. Receipt updated.");
+    };
+
+    function handleResetDefaults() {
+      if (confirm("Reset receipt to default values? This cannot be undone.")) {
+        resetReceiptData();
+        populateReceiptForm();
+        showToast("Reset to defaults.");
+      }
+    }
+
+    // Support Inbox
+    function loadAdminTickets() {
+      const tickets = getSupportTickets();
+      const listEl = document.getElementById("adminTicketsList");
+      const countEl = document.getElementById("adminOpenTicketsCount");
+      listEl.innerHTML = "";
+
+      const openCount = tickets.filter(t => t.status.toLowerCase() !== "closed").length;
+      countEl.textContent = `${openCount} Active`;
+
+      if (tickets.length === 0) {
+        listEl.innerHTML = `<li style="padding: 1rem; color: #64748b; font-size: 0.85rem; text-align: center;">No tickets in inbox.</li>`;
+        renderAdminChat();
+        return;
+      }
+
+      if (!activeAdminTicketId || !tickets.some(t => t.id === activeAdminTicketId)) {
+        activeAdminTicketId = tickets[0].id;
+      }
+
+      tickets.forEach(ticket => {
+        const li = document.createElement("li");
+        li.className = `ticket-item ${ticket.id === activeAdminTicketId ? 'active' : ''}`;
+        li.onclick = () => {
+          activeAdminTicketId = ticket.id;
+          loadAdminTickets();
+        };
+
+        const lastMsg = ticket.messages[ticket.messages.length - 1];
+        const lastText = lastMsg ? `${lastMsg.sender === 'admin' ? 'You: ' : ''}${lastMsg.text}` : "No messages";
+
+        li.innerHTML = `
+          <div class="ticket-item-top">
+            <span><strong>${ticket.id}</strong> &middot; ${ticket.customerName}</span>
+            <span>${ticket.status}</span>
+          </div>
+          <div class="ticket-item-subject">${escapeHtml(ticket.subject)}</div>
+          <div class="ticket-item-preview">${escapeHtml(lastText)}</div>
+        `;
+        listEl.appendChild(li);
+      });
+
+      renderAdminChat();
+    }
+
+    function renderAdminChat() {
+      const tickets = getSupportTickets();
+      const ticket = tickets.find(t => t.id === activeAdminTicketId);
+      const messagesContainer = document.getElementById("adminChatMessages");
+      const subjectEl = document.getElementById("adminChatSubject");
+      const metaEl = document.getElementById("adminChatMeta");
+      const statusSelect = document.getElementById("ticketStatusSelect");
+
+      if (!ticket) {
+        subjectEl.textContent = "No Ticket Selected";
+        metaEl.textContent = "Select a ticket from the inbox on the left.";
+        messagesContainer.innerHTML = `<div style="text-align:center;color:#64748b;margin-top:3rem;">Select an inquiry from the inbox.</div>`;
+        document.getElementById("adminChatInputArea").style.display = "none";
+        statusSelect.style.display = "none";
+        return;
+      }
+
+      document.getElementById("adminChatInputArea").style.display = "flex";
+      statusSelect.style.display = "inline-block";
+      statusSelect.value = ticket.status;
+
+      subjectEl.textContent = ticket.subject;
+      metaEl.textContent = `Ticket: ${ticket.id} | Order: ${ticket.orderId} | Customer: ${ticket.customerName} (${ticket.customerEmail})`;
+
+      messagesContainer.innerHTML = "";
+      ticket.messages.forEach(msg => {
+        const isAdmin = msg.sender === "admin";
+        const wrapper = document.createElement("div");
+        wrapper.className = `message-bubble-wrapper ${isAdmin ? 'from-admin' : 'from-customer'}`;
+        wrapper.innerHTML = `
+          <div class="message-sender-info">
+            <strong>${escapeHtml(msg.senderName || (isAdmin ? 'You (Admin)' : ticket.customerName))}</strong>
+            <span>${msg.timestamp || ''}</span>
+          </div>
+          <div class="message-bubble" style="${isAdmin ? '' : 'background-color:#1e293b; color:#ffffff;'}">
+            ${escapeHtml(msg.text)}
+          </div>
+        `;
+        messagesContainer.appendChild(wrapper);
+      });
+
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    function sendAdminReply() {
+      const input = document.getElementById("adminReplyInput");
+      const text = input.value.trim();
+      if (!text || !activeAdminTicketId) return;
+
+      const tickets = getSupportTickets();
+      const ticket = tickets.find(t => t.id === activeAdminTicketId);
+      if (!ticket) return;
+
+      ticket.messages.push({
+        sender: "admin",
+        senderName: "Support Team",
+        text: text,
+        timestamp: getCurrentTimestamp()
+      });
+      ticket.status = "Answered";
+
+      saveSupportTickets(tickets);
+      input.value = "";
+      loadAdminTickets();
+      showToast("Reply sent. Ticket updated.");
+    }
+
+    function updateTicketStatus(newStatus) {
+      if (!activeAdminTicketId) return;
+      const tickets = getSupportTickets();
+      const ticket = tickets.find(t => t.id === activeAdminTicketId);
+      if (!ticket) return;
+      ticket.status = newStatus;
+      saveSupportTickets(tickets);
+      loadAdminTickets();
+      showToast(`Ticket status set to ${newStatus}.`);
+    }
+
+    document.getElementById("adminReplyInput").addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        sendAdminReply();
+      }
+    });
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      populateReceiptForm();
+      loadAdminTickets();
+    });
+
+    window.addEventListener("storage", (e) => {
+      if (e.key === TICKETS_STORAGE_KEY) loadAdminTickets();
+      if (e.key === RECEIPT_STORAGE_KEY) populateReceiptForm();
+    });
+
+    window.addEventListener("supportTicketsUpdated", () => { loadAdminTickets(); });
+
+    // Poll every 2 seconds as fallback for same-window updates
+    setInterval(() => {
+      if (document.getElementById("tabSupportContent").style.display !== "none") {
+        loadAdminTickets();
+      }
+    }, 2000);
+  </script>
+</body>
+</html>
