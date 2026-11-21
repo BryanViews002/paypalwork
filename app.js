@@ -26,6 +26,7 @@ const DEFAULT_RECEIPT = {
   ],
   taxRate: 0.08, // 8%
   shipping: 0.00,
+  totalAmount: 170.00, // Admin-editable main receipt amount
   taxDepositAmount: 250, // Admin-editable tax deposit shown on tax.html
   notes: "Thank you for your order! This receipt confirms your payment. If you have any inquiries regarding this order, please click 'Contact Support'."
 };
@@ -108,6 +109,17 @@ function saveSupportTickets(tickets) {
 
 // Calculations
 function calculateReceiptTotals(receipt) {
+  // If admin set a custom total amount, use it directly
+  if (receipt && receipt.totalAmount !== undefined && receipt.totalAmount !== null && receipt.totalAmount !== "") {
+    const val = Number(receipt.totalAmount) || 0;
+    return {
+      subtotal: val.toFixed(2),
+      taxAmount: "0.00",
+      shipping: "0.00",
+      grandTotal: val.toFixed(2)
+    };
+  }
+
   const subtotal = (receipt.items || []).reduce((sum, item) => {
     return sum + (Number(item.qty) || 0) * (Number(item.price) || 0);
   }, 0);

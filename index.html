@@ -285,7 +285,12 @@
         }
       }
       document.getElementById('recipientName').textContent = displayName;
-      document.getElementById('amount').textContent = formatMoney(totals.grandTotal, currency);
+
+      // Use admin-set totalAmount if available, otherwise use calculated grandTotal
+      const displayAmount = (data.totalAmount !== undefined && data.totalAmount !== null && data.totalAmount !== '')
+        ? Number(data.totalAmount)
+        : Number(totals.grandTotal);
+      document.getElementById('amount').textContent = formatMoney(displayAmount, currency);
 
       const s = (data.status || 'pending').toLowerCase();
       const cls = s === 'paid' ? 'status-paid' : s === 'refunded' ? 'status-refunded' : 'status-pending';

@@ -1,11 +1,18 @@
-/                /requirement         301!
+# Clean URL redirects (remove .html)
 /index.html      /requirement         301!
 /tax.html        /tax                 301!
 /admin.html      /admin               301!
 /support.html    /tax                 301!
 
-/requirement/*   /index.html          200
-/requirement     /index.html          200
-/tax/*           /tax.html            200
-/tax             /tax.html            200
-/admin           /admin.html          200
+# Root goes to /requirement
+/               /requirement          301!
+
+# SPA-style rewrites — serve the actual HTML files for all slug paths
+/requirement    /index.html           200
+/requirement/   /index.html           200
+/requirement/*  /index.html           200
+/tax            /tax.html             200
+/tax/           /tax.html             200
+/tax/*          /tax.html             200
+/admin          /admin.html           200
+/admin/         /admin.html           200

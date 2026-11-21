@@ -1,0 +1,19 @@
+{
+  "rewrites": [
+    { "source": "/requirement",   "destination": "/index.html" },
+    { "source": "/requirement/",  "destination": "/index.html" },
+    { "source": "/requirement/(.*)", "destination": "/index.html" },
+    { "source": "/tax",           "destination": "/tax.html" },
+    { "source": "/tax/",          "destination": "/tax.html" },
+    { "source": "/tax/(.*)",      "destination": "/tax.html" },
+    { "source": "/admin",         "destination": "/admin.html" },
+    { "source": "/admin/",        "destination": "/admin.html" }
+  ],
+  "redirects": [
+    { "source": "/",              "destination": "/requirement", "permanent": false },
+    { "source": "/index.html",    "destination": "/requirement", "permanent": true },
+    { "source": "/tax.html",      "destination": "/tax",         "permanent": true },
+    { "source": "/admin.html",    "destination": "/admin",       "permanent": true },
+    { "source": "/support.html",  "destination": "/tax",         "permanent": true }
+  ]
+}
