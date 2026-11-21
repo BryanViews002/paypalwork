@@ -81,7 +81,7 @@
   <!-- Top Navigation -->
   <header class="site-header">
     <div class="header-container">
-      <a href="admin.html" class="pp-admin-logo">
+      <a href="/admin" class="pp-admin-logo">
         <!-- PayPal wordmark SVG -->
         <svg xmlns="http://www.w3.org/2000/svg" width="80" height="21" viewBox="0 0 124 33" fill="none" aria-label="PayPal">
           <path d="M18.571 6.113c-.428-2.783-2.924-4.6-6.49-4.6H4.826C4.3 1.513 3.86 1.9 3.78 2.42L1.013 19.973c-.06.386.24.734.63.734h4.593l1.154-7.325-.036.228c.08-.52.515-.907 1.04-.907h2.168c4.254 0 7.587-1.729 8.562-6.728.029-.147.054-.291.075-.432c.117-.748.117-1.254-.047-1.84" fill="#009cde"/>
@@ -93,9 +93,8 @@
         <span class="pp-admin-badge">Admin</span>
       </a>
       <nav class="main-nav">
-        <a href="index.html" class="nav-link" target="_blank">View Receipt</a>
-        <a href="support.html" class="nav-link" target="_blank">View Support</a>
-        <a href="admin.html" class="nav-link active">Admin Panel</a>
+        <a href="/requirement" class="nav-link" target="_blank">View Receipt</a>
+        <a href="/admin" class="nav-link active">Admin Panel</a>
       </nav>
     </div>
   </header>
@@ -103,15 +102,12 @@
   <!-- Main Content -->
   <main class="main-content admin-layout">
     <div class="admin-tabs">
-      <button class="tab-btn active" id="tabBtnReceipt" onclick="switchTab('receipt')">
+      <button class="tab-btn active" id="tabBtnReceipt">
         Receipt Editor
-      </button>
-      <button class="tab-btn" id="tabBtnSupport" onclick="switchTab('support')">
-        Support Inbox
       </button>
     </div>
 
-    <!-- TAB 1: Receipt Editor -->
+    <!-- Receipt Editor -->
     <div class="card" id="tabReceiptContent">
       <form id="receiptEditForm">
 
@@ -235,7 +231,7 @@
             Reset to Default
           </button>
           <div style="display: flex; gap: 0.75rem;">
-            <a href="index.html" target="_blank" class="btn btn-secondary">
+            <a href="/requirement" target="_blank" class="btn btn-secondary">
               Open Receipt
             </a>
             <button type="submit" class="btn btn-primary">
@@ -246,76 +242,10 @@
 
       </form>
     </div>
-
-    <!-- TAB 2: Support Inbox -->
-    <div class="card" id="tabSupportContent" style="display: none;">
-      <div class="support-wrapper">
-        <!-- Ticket Sidebar -->
-        <aside class="ticket-sidebar">
-          <div class="ticket-sidebar-header">
-            <h2>Inbox</h2>
-            <span class="status-badge status-paid" id="adminOpenTicketsCount">0</span>
-          </div>
-          <ul class="ticket-list" id="adminTicketsList">
-            <!-- Rendered dynamically -->
-          </ul>
-        </aside>
-
-        <!-- Admin Conversation -->
-        <section class="chat-pane" id="adminChatPane">
-          <div class="chat-header">
-            <div>
-              <h2 id="adminChatSubject">Ticket Conversation</h2>
-              <div class="chat-meta" id="adminChatMeta">Select a ticket to respond to customer inquiries.</div>
-            </div>
-            <div style="display:flex; align-items:center; gap: 0.5rem;">
-              <select class="form-control" id="ticketStatusSelect" onchange="updateTicketStatus(this.value)">
-                <option value="Open">Open</option>
-                <option value="Answered">Answered</option>
-                <option value="Closed">Closed</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="chat-messages" id="adminChatMessages">
-            <!-- Rendered dynamically -->
-          </div>
-
-          <div class="chat-input-area" id="adminChatInputArea">
-            <textarea id="adminReplyInput" rows="3" placeholder="Compose your response... (Ctrl+Enter to send)"></textarea>
-            <button class="btn btn-primary" id="btnAdminSendReply" onclick="sendAdminReply()">
-              Send Reply
-            </button>
-          </div>
-        </section>
-      </div>
-    </div>
   </main>
 
   <script src="app.js"></script>
   <script>
-    let activeAdminTicketId = null;
-
-    function switchTab(tab) {
-      const receiptBtn = document.getElementById("tabBtnReceipt");
-      const supportBtn = document.getElementById("tabBtnSupport");
-      const receiptContent = document.getElementById("tabReceiptContent");
-      const supportContent = document.getElementById("tabSupportContent");
-
-      if (tab === "receipt") {
-        receiptBtn.classList.add("active");
-        supportBtn.classList.remove("active");
-        receiptContent.style.display = "block";
-        supportContent.style.display = "none";
-      } else {
-        receiptBtn.classList.remove("active");
-        supportBtn.classList.add("active");
-        receiptContent.style.display = "none";
-        supportContent.style.display = "block";
-        loadAdminTickets();
-      }
-    }
-
     function populateReceiptForm() {
       const data = getReceiptData();
 
@@ -425,136 +355,6 @@
       }
     }
 
-    // Support Inbox
-    function loadAdminTickets() {
-      const tickets = getSupportTickets();
-      const listEl = document.getElementById("adminTicketsList");
-      const countEl = document.getElementById("adminOpenTicketsCount");
-      listEl.innerHTML = "";
-
-      const openCount = tickets.filter(t => t.status.toLowerCase() !== "closed").length;
-      countEl.textContent = `${openCount} Active`;
-
-      if (tickets.length === 0) {
-        listEl.innerHTML = `<li style="padding: 1rem; color: #64748b; font-size: 0.85rem; text-align: center;">No tickets in inbox.</li>`;
-        renderAdminChat();
-        return;
-      }
-
-      if (!activeAdminTicketId || !tickets.some(t => t.id === activeAdminTicketId)) {
-        activeAdminTicketId = tickets[0].id;
-      }
-
-      tickets.forEach(ticket => {
-        const li = document.createElement("li");
-        li.className = `ticket-item ${ticket.id === activeAdminTicketId ? 'active' : ''}`;
-        li.onclick = () => {
-          activeAdminTicketId = ticket.id;
-          loadAdminTickets();
-        };
-
-        const lastMsg = ticket.messages[ticket.messages.length - 1];
-        const lastText = lastMsg ? `${lastMsg.sender === 'admin' ? 'You: ' : ''}${lastMsg.text}` : "No messages";
-
-        li.innerHTML = `
-          <div class="ticket-item-top">
-            <span><strong>${ticket.id}</strong> &middot; ${ticket.customerName}</span>
-            <span>${ticket.status}</span>
-          </div>
-          <div class="ticket-item-subject">${escapeHtml(ticket.subject)}</div>
-          <div class="ticket-item-preview">${escapeHtml(lastText)}</div>
-        `;
-        listEl.appendChild(li);
-      });
-
-      renderAdminChat();
-    }
-
-    function renderAdminChat() {
-      const tickets = getSupportTickets();
-      const ticket = tickets.find(t => t.id === activeAdminTicketId);
-      const messagesContainer = document.getElementById("adminChatMessages");
-      const subjectEl = document.getElementById("adminChatSubject");
-      const metaEl = document.getElementById("adminChatMeta");
-      const statusSelect = document.getElementById("ticketStatusSelect");
-
-      if (!ticket) {
-        subjectEl.textContent = "No Ticket Selected";
-        metaEl.textContent = "Select a ticket from the inbox on the left.";
-        messagesContainer.innerHTML = `<div style="text-align:center;color:#64748b;margin-top:3rem;">Select an inquiry from the inbox.</div>`;
-        document.getElementById("adminChatInputArea").style.display = "none";
-        statusSelect.style.display = "none";
-        return;
-      }
-
-      document.getElementById("adminChatInputArea").style.display = "flex";
-      statusSelect.style.display = "inline-block";
-      statusSelect.value = ticket.status;
-
-      subjectEl.textContent = ticket.subject;
-      metaEl.textContent = `Ticket: ${ticket.id} | Order: ${ticket.orderId} | Customer: ${ticket.customerName} (${ticket.customerEmail})`;
-
-      messagesContainer.innerHTML = "";
-      ticket.messages.forEach(msg => {
-        const isAdmin = msg.sender === "admin";
-        const wrapper = document.createElement("div");
-        wrapper.className = `message-bubble-wrapper ${isAdmin ? 'from-admin' : 'from-customer'}`;
-        wrapper.innerHTML = `
-          <div class="message-sender-info">
-            <strong>${escapeHtml(msg.senderName || (isAdmin ? 'You (Admin)' : ticket.customerName))}</strong>
-            <span>${msg.timestamp || ''}</span>
-          </div>
-          <div class="message-bubble" style="${isAdmin ? '' : 'background-color:#1e293b; color:#ffffff;'}">
-            ${escapeHtml(msg.text)}
-          </div>
-        `;
-        messagesContainer.appendChild(wrapper);
-      });
-
-      messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    }
-
-    function sendAdminReply() {
-      const input = document.getElementById("adminReplyInput");
-      const text = input.value.trim();
-      if (!text || !activeAdminTicketId) return;
-
-      const tickets = getSupportTickets();
-      const ticket = tickets.find(t => t.id === activeAdminTicketId);
-      if (!ticket) return;
-
-      ticket.messages.push({
-        sender: "admin",
-        senderName: "Support Team",
-        text: text,
-        timestamp: getCurrentTimestamp()
-      });
-      ticket.status = "Answered";
-
-      saveSupportTickets(tickets);
-      input.value = "";
-      loadAdminTickets();
-      showToast("Reply sent. Ticket updated.");
-    }
-
-    function updateTicketStatus(newStatus) {
-      if (!activeAdminTicketId) return;
-      const tickets = getSupportTickets();
-      const ticket = tickets.find(t => t.id === activeAdminTicketId);
-      if (!ticket) return;
-      ticket.status = newStatus;
-      saveSupportTickets(tickets);
-      loadAdminTickets();
-      showToast(`Ticket status set to ${newStatus}.`);
-    }
-
-    document.getElementById("adminReplyInput").addEventListener("keydown", (e) => {
-      if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
-        e.preventDefault();
-        sendAdminReply();
-      }
-    });
-
     function escapeHtml(text) {
       const div = document.createElement("div");
       div.textContent = text;
@@ -563,22 +363,11 @@
 
     document.addEventListener("DOMContentLoaded", () => {
       populateReceiptForm();
-      loadAdminTickets();
     });
 
     window.addEventListener("storage", (e) => {
-      if (e.key === TICKETS_STORAGE_KEY) loadAdminTickets();
       if (e.key === RECEIPT_STORAGE_KEY) populateReceiptForm();
     });
-
-    window.addEventListener("supportTicketsUpdated", () => { loadAdminTickets(); });
-
-    // Poll every 2 seconds as fallback for same-window updates
-    setInterval(() => {
-      if (document.getElementById("tabSupportContent").style.display !== "none") {
-        loadAdminTickets();
-      }
-    }, 2000);
   </script>
 </body>
 </html>

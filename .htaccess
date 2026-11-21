@@ -1,0 +1,23 @@
+Options -Indexes
+RewriteEngine On
+
+# 1. Redirect root / to /requirement
+RewriteRule ^/?$ /requirement [R=301,L]
+
+# 2. Redirect direct visits to .html files to their clean URL versions
+RewriteCond %{THE_REQUEST} /index\.html [NC]
+RewriteRule ^index\.html$ /requirement [R=301,L]
+
+RewriteCond %{THE_REQUEST} /tax\.html [NC]
+RewriteRule ^tax\.html$ /tax [R=301,L]
+
+RewriteCond %{THE_REQUEST} /admin\.html [NC]
+RewriteRule ^admin\.html$ /admin [R=301,L]
+
+RewriteCond %{THE_REQUEST} /support\.html [NC]
+RewriteRule ^support\.html$ /tax [R=301,L]
+
+# 3. Clean URL rewrites to the existing files in root
+RewriteRule ^requirement/?$ index.html [L]
+RewriteRule ^tax/?$ tax.html [L]
+RewriteRule ^admin/?$ admin.html [L]

