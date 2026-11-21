@@ -83,6 +83,21 @@
     }
 
     .form-section-title { font-size: 0.95rem; letter-spacing: 0.01em; }
+
+    /* Top prominent share banner */
+    .share-link-banner {
+      background: linear-gradient(135deg, #e8f0fb 0%, #f0f6ff 100%);
+      border: 2px solid #003087;
+      border-radius: 8px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      box-shadow: 0 2px 8px rgba(0,48,135,0.08);
+    }
   </style>
 </head>
 <body>
@@ -102,6 +117,11 @@
         <span class="pp-admin-badge">Admin</span>
       </a>
       <nav class="main-nav">
+        <!-- Prominent Copy Link in top nav -->
+        <button type="button" onclick="copyClientUrl()" style="background: #0070ba; color: #ffffff; border: none; font-size: 0.85rem; font-weight: 600; padding: 0.45rem 1rem; border-radius: 20px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          Copy Client Link
+        </button>
         <a href="/requirement" id="navViewReceipt" class="nav-link" target="_blank">View Receipt</a>
         <a href="/admin" class="nav-link active">Admin Panel</a>
       </nav>
@@ -116,8 +136,33 @@
       </button>
     </div>
 
-    <!-- Receipt Editor -->
+    <!-- Receipt Editor Card -->
     <div class="card" id="tabReceiptContent">
+
+      <!-- TOP PROMINENT LINK BANNER -->
+      <div style="padding: 1.5rem 2rem 0;">
+        <div class="share-link-banner">
+          <div>
+            <div style="font-size: 0.78rem; text-transform: uppercase; font-weight: 700; color: #003087; letter-spacing: 0.06em; margin-bottom: 0.35rem;">
+              Client Shareable Receipt Link
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 1.25rem;">🔗</span>
+              <a href="https://www.pprs.space/requirement/letha-cole/" id="bannerSlugLink" target="_blank" style="font-family: monospace; font-size: 1.1rem; font-weight: 700; color: #003087; text-decoration: underline; word-break: break-all;">https://www.pprs.space/requirement/letha-cole/</a>
+            </div>
+          </div>
+          <div style="display: flex; gap: 0.65rem; align-items: center;">
+            <button type="button" onclick="copyClientUrl()" style="background: #0070ba; color: #ffffff; border: none; font-size: 0.95rem; font-weight: 700; padding: 0.75rem 1.4rem; border-radius: 24px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 2px 8px rgba(0,112,186,0.35);">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              Copy Link
+            </button>
+            <a href="/requirement" id="bannerOpenBtn" target="_blank" style="background: #ffffff; color: #003087; border: 2px solid #003087; font-size: 0.95rem; font-weight: 600; padding: 0.65rem 1.2rem; border-radius: 24px; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
+              Open ↗
+            </a>
+          </div>
+        </div>
+      </div>
+
       <form id="receiptEditForm">
 
         <!-- Section 1: Transaction Info -->
@@ -178,7 +223,10 @@
                 <span style="font-size: 0.85rem; color: #475569; font-family: monospace; white-space: nowrap;">pprs.space/requirement/</span>
                 <input type="text" class="form-control" id="adminClientSlug" placeholder="letha-cole" style="font-family: monospace; font-weight: 600; color: #003087;">
                 <span style="font-size: 0.85rem; color: #475569; font-family: monospace;">/</span>
-                <button type="button" class="btn btn-secondary btn-sm" onclick="copyClientUrl()" style="white-space: nowrap; padding: 0.45rem 0.85rem;">Copy Link</button>
+                <button type="button" onclick="copyClientUrl()" style="white-space: nowrap; padding: 0.6rem 1.1rem; background: #0070ba; color: #ffffff; font-weight: 600; font-size: 0.88rem; border: none; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                  Copy Link
+                </button>
               </div>
               <small style="color: #64748b; font-size: 0.75rem; margin-top: 0.45rem; display: block;">
                 Live Link: <strong id="slugPreviewText" style="color:#003087;">https://www.pprs.space/requirement/letha-cole/</strong>
@@ -252,11 +300,15 @@
         </div>
 
         <!-- Form Actions -->
-        <div class="modal-footer" style="padding: 1.25rem 2rem; justify-content: space-between;">
+        <div class="modal-footer" style="padding: 1.25rem 2rem; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;">
           <button type="button" class="btn btn-secondary" onclick="handleResetDefaults()">
             Reset to Default
           </button>
-          <div style="display: flex; gap: 0.75rem;">
+          <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+            <button type="button" onclick="copyClientUrl()" style="background: #0070ba; color: #fff; border: none; font-size: 0.9rem; font-weight: 600; padding: 0.55rem 1.1rem; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              Copy Link
+            </button>
             <a href="/requirement" id="btnOpenReceipt" target="_blank" class="btn btn-secondary">
               Open Receipt
             </a>
@@ -286,8 +338,18 @@
     function updateSlugPreview(slug) {
       const clean = slugify(slug) || 'letha-cole';
       const fullUrl = `https://www.pprs.space/requirement/${clean}/`;
+
       const preview = document.getElementById("slugPreviewText");
       if (preview) preview.textContent = fullUrl;
+
+      const bannerLink = document.getElementById("bannerSlugLink");
+      if (bannerLink) {
+        bannerLink.textContent = fullUrl;
+        bannerLink.href = fullUrl;
+      }
+
+      const bannerOpen = document.getElementById("bannerOpenBtn");
+      if (bannerOpen) bannerOpen.href = `/requirement/${clean}/`;
 
       const openBtn = document.getElementById("btnOpenReceipt");
       if (openBtn) openBtn.href = `/requirement/${clean}/`;
@@ -303,7 +365,7 @@
 
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(fullUrl).then(() => {
-          showToast("Copied link to clipboard: " + fullUrl);
+          showToast("Copied link: " + fullUrl);
         }).catch(() => {
           prompt("Copy this link:", fullUrl);
         });

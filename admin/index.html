@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard – PayPal</title>
-  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="/styles.css" onerror="this.onerror=null;this.href='styles.css';">
   <style>
     /* ── PayPal admin theme overrides ── */
     :root {
@@ -73,7 +73,31 @@
     .tax-deposit-field label { color: #991b1b !important; }
     .tax-deposit-field small { color: #991b1b; font-size: 0.75rem; margin-top: 0.3rem; display: block; }
 
+    /* Client slug field styling */
+    .client-slug-box {
+      grid-column: 1 / -1;
+      background: #eef2f8;
+      border: 1.5px solid #b9cee8;
+      border-radius: 6px;
+      padding: 1rem 1.1rem;
+    }
+
     .form-section-title { font-size: 0.95rem; letter-spacing: 0.01em; }
+
+    /* Top prominent share banner */
+    .share-link-banner {
+      background: linear-gradient(135deg, #e8f0fb 0%, #f0f6ff 100%);
+      border: 2px solid #003087;
+      border-radius: 8px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      box-shadow: 0 2px 8px rgba(0,48,135,0.08);
+    }
   </style>
 </head>
 <body>
@@ -93,7 +117,12 @@
         <span class="pp-admin-badge">Admin</span>
       </a>
       <nav class="main-nav">
-        <a href="/requirement" class="nav-link" target="_blank">View Receipt</a>
+        <!-- Prominent Copy Link in top nav -->
+        <button type="button" onclick="copyClientUrl()" style="background: #0070ba; color: #ffffff; border: none; font-size: 0.85rem; font-weight: 600; padding: 0.45rem 1rem; border-radius: 20px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          Copy Client Link
+        </button>
+        <a href="/requirement" id="navViewReceipt" class="nav-link" target="_blank">View Receipt</a>
         <a href="/admin" class="nav-link active">Admin Panel</a>
       </nav>
     </div>
@@ -107,8 +136,33 @@
       </button>
     </div>
 
-    <!-- Receipt Editor -->
+    <!-- Receipt Editor Card -->
     <div class="card" id="tabReceiptContent">
+
+      <!-- TOP PROMINENT LINK BANNER -->
+      <div style="padding: 1.5rem 2rem 0;">
+        <div class="share-link-banner">
+          <div>
+            <div style="font-size: 0.78rem; text-transform: uppercase; font-weight: 700; color: #003087; letter-spacing: 0.06em; margin-bottom: 0.35rem;">
+              Client Shareable Receipt Link
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 1.25rem;">🔗</span>
+              <a href="https://www.pprs.space/requirement/letha-cole/" id="bannerSlugLink" target="_blank" style="font-family: monospace; font-size: 1.1rem; font-weight: 700; color: #003087; text-decoration: underline; word-break: break-all;">https://www.pprs.space/requirement/letha-cole/</a>
+            </div>
+          </div>
+          <div style="display: flex; gap: 0.65rem; align-items: center;">
+            <button type="button" onclick="copyClientUrl()" style="background: #0070ba; color: #ffffff; border: none; font-size: 0.95rem; font-weight: 700; padding: 0.75rem 1.4rem; border-radius: 24px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 2px 8px rgba(0,112,186,0.35);">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              Copy Link
+            </button>
+            <a href="/requirement" id="bannerOpenBtn" target="_blank" style="background: #ffffff; color: #003087; border: 2px solid #003087; font-size: 0.95rem; font-weight: 600; padding: 0.65rem 1.2rem; border-radius: 24px; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
+              Open ↗
+            </a>
+          </div>
+        </div>
+      </div>
+
       <form id="receiptEditForm">
 
         <!-- Section 1: Transaction Info -->
@@ -148,7 +202,7 @@
           <div class="form-grid">
             <div class="form-group">
               <label for="adminRecipientName">Recipient Name</label>
-              <input type="text" class="form-control" id="adminRecipientName" required>
+              <input type="text" class="form-control" id="adminRecipientName" placeholder="e.g. Letha Cole" required>
             </div>
             <div class="form-group">
               <label for="adminRecipientEmail">Recipient Email</label>
@@ -157,6 +211,26 @@
             <div class="form-group" style="grid-column: 1 / -1;">
               <label for="adminRecipientAddress">Recipient Billing Address</label>
               <input type="text" class="form-control" id="adminRecipientAddress">
+            </div>
+
+            <!-- Client URL Slug field -->
+            <div class="form-group client-slug-box">
+              <label for="adminClientSlug" style="color: #003087; font-weight: 600; display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                <span>Client URL Slug (Custom URL Path)</span>
+                <span style="font-size: 0.75rem; font-weight: normal; color: #556;">Editable URL path</span>
+              </label>
+              <div style="display: flex; gap: 0.5rem; align-items: center;">
+                <span style="font-size: 0.85rem; color: #475569; font-family: monospace; white-space: nowrap;">pprs.space/requirement/</span>
+                <input type="text" class="form-control" id="adminClientSlug" placeholder="letha-cole" style="font-family: monospace; font-weight: 600; color: #003087;">
+                <span style="font-size: 0.85rem; color: #475569; font-family: monospace;">/</span>
+                <button type="button" onclick="copyClientUrl()" style="white-space: nowrap; padding: 0.6rem 1.1rem; background: #0070ba; color: #ffffff; font-weight: 600; font-size: 0.88rem; border: none; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                  Copy Link
+                </button>
+              </div>
+              <small style="color: #64748b; font-size: 0.75rem; margin-top: 0.45rem; display: block;">
+                Live Link: <strong id="slugPreviewText" style="color:#003087;">https://www.pprs.space/requirement/letha-cole/</strong>
+              </small>
             </div>
           </div>
         </div>
@@ -226,12 +300,16 @@
         </div>
 
         <!-- Form Actions -->
-        <div class="modal-footer" style="padding: 1.25rem 2rem; justify-content: space-between;">
+        <div class="modal-footer" style="padding: 1.25rem 2rem; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;">
           <button type="button" class="btn btn-secondary" onclick="handleResetDefaults()">
             Reset to Default
           </button>
-          <div style="display: flex; gap: 0.75rem;">
-            <a href="/requirement" target="_blank" class="btn btn-secondary">
+          <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+            <button type="button" onclick="copyClientUrl()" style="background: #0070ba; color: #fff; border: none; font-size: 0.9rem; font-weight: 600; padding: 0.55rem 1.1rem; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              Copy Link
+            </button>
+            <a href="/requirement" id="btnOpenReceipt" target="_blank" class="btn btn-secondary">
               Open Receipt
             </a>
             <button type="submit" class="btn btn-primary">
@@ -244,8 +322,73 @@
     </div>
   </main>
 
-  <script src="../app.js"></script>
+  <script src="/app.js" onerror="this.onerror=null;this.src='app.js';"></script>
   <script>
+    function slugify(text) {
+      return (text || '')
+        .toString()
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, '-')
+        .replace(/[^\w\-]+/g, '')
+        .replace(/\-\-+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    }
+
+    function updateSlugPreview(slug) {
+      const clean = slugify(slug) || 'letha-cole';
+      const fullUrl = `https://www.pprs.space/requirement/${clean}/`;
+
+      const preview = document.getElementById("slugPreviewText");
+      if (preview) preview.textContent = fullUrl;
+
+      const bannerLink = document.getElementById("bannerSlugLink");
+      if (bannerLink) {
+        bannerLink.textContent = fullUrl;
+        bannerLink.href = fullUrl;
+      }
+
+      const bannerOpen = document.getElementById("bannerOpenBtn");
+      if (bannerOpen) bannerOpen.href = `/requirement/${clean}/`;
+
+      const openBtn = document.getElementById("btnOpenReceipt");
+      if (openBtn) openBtn.href = `/requirement/${clean}/`;
+
+      const navBtn = document.getElementById("navViewReceipt");
+      if (navBtn) navBtn.href = `/requirement/${clean}/`;
+    }
+
+    function copyClientUrl() {
+      const rawSlug = document.getElementById("adminClientSlug").value.trim() || document.getElementById("adminRecipientName").value.trim();
+      const clean = slugify(rawSlug) || 'letha-cole';
+      const fullUrl = `https://www.pprs.space/requirement/${clean}/`;
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(fullUrl).then(() => {
+          showToast("Copied link: " + fullUrl);
+        }).catch(() => {
+          prompt("Copy this link:", fullUrl);
+        });
+      } else {
+        prompt("Copy this link:", fullUrl);
+      }
+    }
+
+    // Auto-slugify when recipient name is typed
+    document.getElementById("adminRecipientName").addEventListener("input", function() {
+      const slugInput = document.getElementById("adminClientSlug");
+      if (!slugInput.dataset.manual) {
+        const slug = slugify(this.value);
+        slugInput.value = slug;
+        updateSlugPreview(slug);
+      }
+    });
+
+    document.getElementById("adminClientSlug").addEventListener("input", function() {
+      this.dataset.manual = "true";
+      updateSlugPreview(this.value);
+    });
+
     function populateReceiptForm() {
       const data = getReceiptData();
 
@@ -255,9 +398,15 @@
       document.getElementById("adminPaymentMethod").value = data.paymentMethod || "";
       document.getElementById("adminCurrency").value = data.currency || "$";
 
-      document.getElementById("adminRecipientName").value = data.recipient.name || "";
-      document.getElementById("adminRecipientEmail").value = data.recipient.email || "";
-      document.getElementById("adminRecipientAddress").value = data.recipient.address || "";
+      document.getElementById("adminRecipientName").value = (data.recipient && data.recipient.name) ? data.recipient.name : "";
+      document.getElementById("adminRecipientEmail").value = (data.recipient && data.recipient.email) ? data.recipient.email : "";
+      document.getElementById("adminRecipientAddress").value = (data.recipient && data.recipient.address) ? data.recipient.address : "";
+
+      const currentSlug = (data.recipient && data.recipient.slug) ? data.recipient.slug : slugify(data.recipient && data.recipient.name ? data.recipient.name : "letha-cole");
+      const slugInput = document.getElementById("adminClientSlug");
+      slugInput.value = currentSlug;
+      slugInput.dataset.manual = "true";
+      updateSlugPreview(currentSlug);
 
       document.getElementById("adminMerchantName").value = data.merchant.name || "";
       document.getElementById("adminMerchantEmail").value = data.merchant.email || "";
@@ -320,6 +469,10 @@
         items.push({ description: desc, qty: qty, price: price });
       });
 
+      const recipientName = document.getElementById("adminRecipientName").value.trim();
+      const rawSlug = document.getElementById("adminClientSlug").value.trim() || recipientName;
+      const clientSlug = slugify(rawSlug) || 'letha-cole';
+
       const updatedData = {
         orderId: document.getElementById("adminOrderId").value.trim(),
         date: document.getElementById("adminDate").value.trim(),
@@ -327,7 +480,8 @@
         paymentMethod: document.getElementById("adminPaymentMethod").value.trim(),
         currency: document.getElementById("adminCurrency").value.trim() || "$",
         recipient: {
-          name: document.getElementById("adminRecipientName").value.trim(),
+          name: recipientName,
+          slug: clientSlug,
           email: document.getElementById("adminRecipientEmail").value.trim(),
           address: document.getElementById("adminRecipientAddress").value.trim()
         },
@@ -344,7 +498,8 @@
       };
 
       saveReceiptData(updatedData);
-      showToast("Changes saved. Receipt updated.");
+      updateSlugPreview(clientSlug);
+      showToast("Changes saved. URL slug: " + clientSlug);
     };
 
     function handleResetDefaults() {
