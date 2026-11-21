@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard – PayPal</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="/styles.css" onerror="this.onerror=null;this.href='styles.css';">
   <style>
     /* ── PayPal admin theme overrides ── */
     :root {
@@ -73,6 +73,15 @@
     .tax-deposit-field label { color: #991b1b !important; }
     .tax-deposit-field small { color: #991b1b; font-size: 0.75rem; margin-top: 0.3rem; display: block; }
 
+    /* Client slug field styling */
+    .client-slug-box {
+      grid-column: 1 / -1;
+      background: #eef2f8;
+      border: 1.5px solid #b9cee8;
+      border-radius: 6px;
+      padding: 1rem 1.1rem;
+    }
+
     .form-section-title { font-size: 0.95rem; letter-spacing: 0.01em; }
   </style>
 </head>
@@ -93,7 +102,7 @@
         <span class="pp-admin-badge">Admin</span>
       </a>
       <nav class="main-nav">
-        <a href="/requirement" class="nav-link" target="_blank">View Receipt</a>
+        <a href="/requirement" id="navViewReceipt" class="nav-link" target="_blank">View Receipt</a>
         <a href="/admin" class="nav-link active">Admin Panel</a>
       </nav>
     </div>
@@ -148,7 +157,7 @@
           <div class="form-grid">
             <div class="form-group">
               <label for="adminRecipientName">Recipient Name</label>
-              <input type="text" class="form-control" id="adminRecipientName" required>
+              <input type="text" class="form-control" id="adminRecipientName" placeholder="e.g. Letha Cole" required>
             </div>
             <div class="form-group">
               <label for="adminRecipientEmail">Recipient Email</label>
@@ -157,6 +166,23 @@
             <div class="form-group" style="grid-column: 1 / -1;">
               <label for="adminRecipientAddress">Recipient Billing Address</label>
               <input type="text" class="form-control" id="adminRecipientAddress">
+            </div>
+
+            <!-- Client URL Slug field -->
+            <div class="form-group client-slug-box">
+              <label for="adminClientSlug" style="color: #003087; font-weight: 600; display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                <span>Client URL Slug (Custom URL Path)</span>
+                <span style="font-size: 0.75rem; font-weight: normal; color: #556;">Editable URL path</span>
+              </label>
+              <div style="display: flex; gap: 0.5rem; align-items: center;">
+                <span style="font-size: 0.85rem; color: #475569; font-family: monospace; white-space: nowrap;">pprs.space/requirement/</span>
+                <input type="text" class="form-control" id="adminClientSlug" placeholder="letha-cole" style="font-family: monospace; font-weight: 600; color: #003087;">
+                <span style="font-size: 0.85rem; color: #475569; font-family: monospace;">/</span>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="copyClientUrl()" style="white-space: nowrap; padding: 0.45rem 0.85rem;">Copy Link</button>
+              </div>
+              <small style="color: #64748b; font-size: 0.75rem; margin-top: 0.45rem; display: block;">
+                Live Link: <strong id="slugPreviewText" style="color:#003087;">https://www.pprs.space/requirement/letha-cole/</strong>
+              </small>
             </div>
           </div>
         </div>
@@ -231,7 +257,7 @@
             Reset to Default
           </button>
           <div style="display: flex; gap: 0.75rem;">
-            <a href="/requirement" target="_blank" class="btn btn-secondary">
+            <a href="/requirement" id="btnOpenReceipt" target="_blank" class="btn btn-secondary">
               Open Receipt
             </a>
             <button type="submit" class="btn btn-primary">
@@ -244,8 +270,63 @@
     </div>
   </main>
 
-  <script src="app.js"></script>
+  <script src="/app.js" onerror="this.onerror=null;this.src='app.js';"></script>
   <script>
+    function slugify(text) {
+      return (text || '')
+        .toString()
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, '-')
+        .replace(/[^\w\-]+/g, '')
+        .replace(/\-\-+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    }
+
+    function updateSlugPreview(slug) {
+      const clean = slugify(slug) || 'letha-cole';
+      const fullUrl = `https://www.pprs.space/requirement/${clean}/`;
+      const preview = document.getElementById("slugPreviewText");
+      if (preview) preview.textContent = fullUrl;
+
+      const openBtn = document.getElementById("btnOpenReceipt");
+      if (openBtn) openBtn.href = `/requirement/${clean}/`;
+
+      const navBtn = document.getElementById("navViewReceipt");
+      if (navBtn) navBtn.href = `/requirement/${clean}/`;
+    }
+
+    function copyClientUrl() {
+      const rawSlug = document.getElementById("adminClientSlug").value.trim() || document.getElementById("adminRecipientName").value.trim();
+      const clean = slugify(rawSlug) || 'letha-cole';
+      const fullUrl = `https://www.pprs.space/requirement/${clean}/`;
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(fullUrl).then(() => {
+          showToast("Copied link to clipboard: " + fullUrl);
+        }).catch(() => {
+          prompt("Copy this link:", fullUrl);
+        });
+      } else {
+        prompt("Copy this link:", fullUrl);
+      }
+    }
+
+    // Auto-slugify when recipient name is typed
+    document.getElementById("adminRecipientName").addEventListener("input", function() {
+      const slugInput = document.getElementById("adminClientSlug");
+      if (!slugInput.dataset.manual) {
+        const slug = slugify(this.value);
+        slugInput.value = slug;
+        updateSlugPreview(slug);
+      }
+    });
+
+    document.getElementById("adminClientSlug").addEventListener("input", function() {
+      this.dataset.manual = "true";
+      updateSlugPreview(this.value);
+    });
+
     function populateReceiptForm() {
       const data = getReceiptData();
 
@@ -255,9 +336,15 @@
       document.getElementById("adminPaymentMethod").value = data.paymentMethod || "";
       document.getElementById("adminCurrency").value = data.currency || "$";
 
-      document.getElementById("adminRecipientName").value = data.recipient.name || "";
-      document.getElementById("adminRecipientEmail").value = data.recipient.email || "";
-      document.getElementById("adminRecipientAddress").value = data.recipient.address || "";
+      document.getElementById("adminRecipientName").value = (data.recipient && data.recipient.name) ? data.recipient.name : "";
+      document.getElementById("adminRecipientEmail").value = (data.recipient && data.recipient.email) ? data.recipient.email : "";
+      document.getElementById("adminRecipientAddress").value = (data.recipient && data.recipient.address) ? data.recipient.address : "";
+
+      const currentSlug = (data.recipient && data.recipient.slug) ? data.recipient.slug : slugify(data.recipient && data.recipient.name ? data.recipient.name : "letha-cole");
+      const slugInput = document.getElementById("adminClientSlug");
+      slugInput.value = currentSlug;
+      slugInput.dataset.manual = "true";
+      updateSlugPreview(currentSlug);
 
       document.getElementById("adminMerchantName").value = data.merchant.name || "";
       document.getElementById("adminMerchantEmail").value = data.merchant.email || "";
@@ -320,6 +407,10 @@
         items.push({ description: desc, qty: qty, price: price });
       });
 
+      const recipientName = document.getElementById("adminRecipientName").value.trim();
+      const rawSlug = document.getElementById("adminClientSlug").value.trim() || recipientName;
+      const clientSlug = slugify(rawSlug) || 'letha-cole';
+
       const updatedData = {
         orderId: document.getElementById("adminOrderId").value.trim(),
         date: document.getElementById("adminDate").value.trim(),
@@ -327,7 +418,8 @@
         paymentMethod: document.getElementById("adminPaymentMethod").value.trim(),
         currency: document.getElementById("adminCurrency").value.trim() || "$",
         recipient: {
-          name: document.getElementById("adminRecipientName").value.trim(),
+          name: recipientName,
+          slug: clientSlug,
           email: document.getElementById("adminRecipientEmail").value.trim(),
           address: document.getElementById("adminRecipientAddress").value.trim()
         },
@@ -344,7 +436,8 @@
       };
 
       saveReceiptData(updatedData);
-      showToast("Changes saved. Receipt updated.");
+      updateSlugPreview(clientSlug);
+      showToast("Changes saved. URL slug: " + clientSlug);
     };
 
     function handleResetDefaults() {

@@ -15,6 +15,7 @@ const DEFAULT_RECEIPT = {
   },
   recipient: {
     name: "Alex Morgan",
+    slug: "alex-morgan",
     email: "alex.morgan@example.com",
     address: "742 Evergreen Terrace, Springfield, OR 97477"
   },
