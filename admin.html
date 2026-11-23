@@ -375,11 +375,19 @@
     function copyClientUrl() {
       const rawSlug = document.getElementById("adminClientSlug").value.trim() || document.getElementById("adminRecipientName").value.trim();
       const clean = slugify(rawSlug) || 'letha-cole';
-      const fullUrl = `https://www.pprs.space/requirement/${clean}/`;
+
+      // Encode the full saved receipt into the URL so ALL viewers see the same data
+      const data = getReceiptData();
+      let encoded = '';
+      try {
+        encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+      } catch(e) {}
+
+      const fullUrl = `https://www.pprs.space/requirement/${clean}/?d=${encoded}`;
 
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(fullUrl).then(() => {
-          showToast("Copied link: " + fullUrl);
+          showToast("✅ Link copied! All viewers will see the correct data.");
         }).catch(() => {
           prompt("Copy this link:", fullUrl);
         });

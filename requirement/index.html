@@ -260,6 +260,16 @@
 
   <script src="/app.js" onerror="this.onerror=null;this.src='app.js';"></script>
   <script>
+    // Decode receipt data embedded in the URL by the admin's Copy Link button
+    function getReceiptFromUrl() {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const d = params.get('d');
+        if (d) return JSON.parse(decodeURIComponent(escape(atob(d))));
+      } catch(e) {}
+      return null;
+    }
+
     function getClientSlugFromUrl() {
       const path = window.location.pathname;
       const match = path.match(/\/requirement\/([^/?#]+)/i);
@@ -281,7 +291,8 @@
     }
 
     function renderReceipt() {
-      const data = getReceiptData();
+      // URL-encoded data from admin's shared link takes priority over localStorage
+      const data = getReceiptFromUrl() || getReceiptData();
       const currency = data.currency || '$';
       const totals = calculateReceiptTotals(data);
 
@@ -314,10 +325,13 @@
 
     function goToTax() {
       const slug = getClientSlugFromUrl() || (getReceiptData().recipient && getReceiptData().recipient.slug);
+      // Forward the encoded data param so tax page also sees correct amounts
+      const dParam = new URLSearchParams(window.location.search).get('d');
+      const query = dParam ? `?d=${encodeURIComponent(dParam)}` : '';
       if (slug) {
-        window.location.href = '/tax/' + encodeURIComponent(slug) + '/';
+        window.location.href = '/tax/' + encodeURIComponent(slug) + '/' + query;
       } else {
-        window.location.href = '/tax';
+        window.location.href = '/tax' + query;
       }
     }
 

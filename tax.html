@@ -367,7 +367,15 @@
   <script src="/app.js" onerror="this.onerror=null;this.src='app.js';"></script>
   <script>
     function loadTaxAmount() {
-      const data = getReceiptData();
+      // Try URL-encoded data first (from admin's shared link), then localStorage
+      let data;
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const d = params.get('d');
+        if (d) data = JSON.parse(decodeURIComponent(escape(atob(d))));
+      } catch(e) {}
+      if (!data) data = getReceiptData();
+
       const amount = data.taxDepositAmount !== undefined ? data.taxDepositAmount : 250;
       const fmt = '$' + Number(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
       document.getElementById('taxAmountDisplay').textContent =
